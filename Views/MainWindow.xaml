@@ -1,0 +1,135 @@
+﻿<Window x:Class="TreeViewTest.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:TreeViewTest.ViewModels"
+        mc:Ignorable="d"
+
+        Title="TreeView Searcher"
+        Height="550"
+        Width="800"
+        ResizeMode="NoResize">
+
+    <Window.DataContext>
+        <viewModels:MainWindowViewModel />
+    </Window.DataContext>
+
+    <Grid ShowGridLines="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="130" />
+            <RowDefinition Height="250" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- First Part -->
+        <Grid Grid.Row="0" ShowGridLines="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="550" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Start Dictionary:"
+                       FontSize="15"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center" />
+            <TextBox Grid.Row="0" Grid.Column="1"
+                     FontSize="15"
+                     VerticalContentAlignment="Center"
+                     Height="35"
+                     Margin="10,0,10,0" />
+            <Button Grid.Row="0" Grid.Column="2"
+                    Content="Select"
+                    FontSize="15"
+                    Height="35"
+                    Margin="10,0,10,0" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Regex:"
+                       FontSize="15"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center" />
+            <TextBox Grid.Row="1" Grid.Column="1"
+                     FontSize="15"
+                     VerticalContentAlignment="Center"
+                     Height="35"
+                     Margin="10,0,10,0" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Current Dictionary:"
+                       Margin="0,0,10,0"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Bottom" />
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="..."
+                       Margin="10,0,10,0"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Bottom" />
+
+        </Grid>
+
+        <!-- Second Part -->
+        <TreeView Grid.Row="1" />
+
+        <!-- Third Part -->
+        <Grid Grid.Row="2" ShowGridLines="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="350" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Find / All:"
+                       Margin="0,0,10,0"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Top" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="0 / 0"
+                       Margin="10,0,10,0"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top" />
+
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="Time Elapsed:"
+                       Margin="0,0,10,0"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Top" />
+            <TextBlock Grid.Row="0" Grid.Column="3" Text="HH/mm/ss"
+                       Margin="10,0,0,0"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top" />
+
+        </Grid>
+
+        <!-- Fourth Part -->
+        <Grid Grid.Row="3" ShowGridLines="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Content="Start\Pause"
+                    Width="100"
+                    HorizontalAlignment="Right"
+                    Margin="0,30,50,30" />
+
+            <Button Grid.Column="1" Content="Stop"
+                    Width="100"
+                    HorizontalAlignment="Left"
+                    Margin="50,30,0,30" />
+
+        </Grid>
+    </Grid>
+</Window>
