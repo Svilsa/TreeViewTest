@@ -9,7 +9,7 @@
         Title="TreeView Searcher"
         Height="550"
         Width="800"
-        ResizeMode="NoResize">
+        ResizeMode="CanMinimize">
 
     <Window.DataContext>
         <viewModels:MainWindowViewModel />
@@ -47,12 +47,14 @@
                      FontSize="15"
                      VerticalContentAlignment="Center"
                      Height="35"
-                     Margin="10,0,10,0" />
+                     Margin="10,0,10,0"
+                     Text="{Binding StartDictionary}" />
             <Button Grid.Row="0" Grid.Column="2"
                     Content="Select"
                     FontSize="15"
                     Height="35"
-                    Margin="10,0,10,0" />
+                    Margin="10,0,10,0"
+                    Command="{Binding SelectDictionaryCommand}" />
 
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Regex:"
                        FontSize="15"
@@ -62,16 +64,18 @@
                      FontSize="15"
                      VerticalContentAlignment="Center"
                      Height="35"
-                     Margin="10,0,10,0" />
+                     Margin="10,0,10,0"
+                     Text="{Binding RegexString}" />
 
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Current Dictionary:"
                        Margin="0,0,10,0"
                        HorizontalAlignment="Right"
                        VerticalAlignment="Bottom" />
-            <TextBlock Grid.Row="2" Grid.Column="1" Text="..."
+            <TextBlock Grid.Row="2" Grid.Column="1"
                        Margin="10,0,10,0"
                        HorizontalAlignment="Left"
-                       VerticalAlignment="Bottom" />
+                       VerticalAlignment="Bottom"
+                       Text="{Binding CurrentDictionary}" />
 
         </Grid>
 
@@ -94,19 +98,21 @@
                        Margin="0,0,10,0"
                        HorizontalAlignment="Right"
                        VerticalAlignment="Top" />
-            <TextBlock Grid.Row="0" Grid.Column="1" Text="0 / 0"
+            <TextBlock Grid.Row="0" Grid.Column="1"
                        Margin="10,0,10,0"
                        HorizontalAlignment="Left"
-                       VerticalAlignment="Top" />
+                       VerticalAlignment="Top"
+                       Text="{Binding FindAndAll}" />
 
             <TextBlock Grid.Row="0" Grid.Column="2" Text="Time Elapsed:"
                        Margin="0,0,10,0"
                        HorizontalAlignment="Right"
                        VerticalAlignment="Top" />
-            <TextBlock Grid.Row="0" Grid.Column="3" Text="HH/mm/ss"
+            <TextBlock Grid.Row="0" Grid.Column="3"
                        Margin="10,0,0,0"
                        HorizontalAlignment="Left"
-                       VerticalAlignment="Top" />
+                       VerticalAlignment="Top"
+                       Text="{Binding TimeElapsed, StringFormat={}{0:hh':'mm':'ss}}" />
 
         </Grid>
 
@@ -120,10 +126,11 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Content="Start\Pause"
+            <Button Grid.Column="0" Content="{Binding StartAndPauseButtonContent}"
                     Width="100"
                     HorizontalAlignment="Right"
-                    Margin="0,30,50,30" />
+                    Margin="0,30,50,30"
+                    Command="{Binding StartAndPauseCommand}" />
 
             <Button Grid.Column="1" Content="Stop"
                     Width="100"
