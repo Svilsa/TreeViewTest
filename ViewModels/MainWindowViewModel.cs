@@ -10,7 +10,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using TreeViewTest.Core;
 using TreeViewTest.Infrastructure;
 using TreeViewTest.Models;
@@ -21,20 +20,21 @@ namespace TreeViewTest.ViewModels;
 
 public sealed class MainWindowViewModel : INotifyPropertyChanged
 {
-    private string? _startDirectoryPath;
+    private bool _isPaused;
+    private bool _isEnterLocked;
+    private string _startDirectoryPath = string.Empty;
     private string _currentSearchDirectory = string.Empty;
     private Regex _regex = new(".*");
     private ObservableCollection<INode> _startDirectoryMembers = new();
-    private IEnumerator<string>? _enumerator;
 
     private DelegateCommand _startAndPauseCommand;
 
+    private IEnumerator<string>? _enumerator;
     private readonly Stopwatch _stopwatch = new();
     private FindAndAll _findAndAll;
     private TimeSpan _timeElapsed;
     private string _startAndPauseButtonContent = "Start";
 
-    private bool _isPaused;
     private CancellationTokenSource _cancellationTokenSource = new();
     private Settings? _settings;
     private readonly SynchronizationContext? _context = SynchronizationContext.Current;
@@ -43,6 +43,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         _startAndPauseCommand = new DelegateCommand(Start);
         CloseWindowCommand = new DelegateCommand(OnCloseWindow);
+        StopCommand = new DelegateCommand(Stop);
         
         LoadSettings();
     }
@@ -59,7 +60,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public string? StartDirectoryPath
+    public string StartDirectoryPath
     {
         get => _startDirectoryPath;
         set
@@ -78,6 +79,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             if (value == null) return;
             _enumerator = null;
             _regex = new Regex(value);
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsEnterLocked
+    {
+        get => _isEnterLocked;
+        set
+        {
+            _isEnterLocked = value;
             OnPropertyChanged();
         }
     }
@@ -150,38 +161,44 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             {
                 case false:
                 {
-                    StartAndPauseButtonContent = "Pause";
-                    StartAndPauseCommand = new DelegateCommand(Pause);
-
                     _stopwatch.Reset();
                     CurrentSearchDirectory = string.Empty;
                     StartDirectoryMembers = new ObservableCollection<INode>();
                     FindAndAll = new FindAndAll();
+                    IsEnterLocked = true;
 
-                    StartTimerAsync(_cancellationTokenSource.Token);
                     goto case true;
                 }
                 case true:
                 {
+                    StartAndPauseButtonContent = "Pause";
+                    StartAndPauseCommand = new DelegateCommand(Pause);
+                    _cancellationTokenSource = new CancellationTokenSource();
+
+                    StartTimerAsync(_cancellationTokenSource.Token);
                     await Task.Run(() => StartOrContinueSearchingFiles(_cancellationTokenSource.Token));
                     break;
                 }
-                    
+
             }
-            
+
             StartAndPauseButtonContent = "Start";
             StartAndPauseCommand = new DelegateCommand(Start);
+            IsEnterLocked = false;
             _isPaused = false;
             
+            _stopwatch.Stop();
+            _cancellationTokenSource.Cancel();
+
             _enumerator?.Dispose();
             _enumerator = null;
         }
         catch (OperationCanceledException)
         {
-            _cancellationTokenSource = new CancellationTokenSource();
         }
         catch (Exception e)
         {
+            Stop();
             MessageBox.Show(e.Message);
         }
     }
@@ -192,9 +209,29 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _cancellationTokenSource.Cancel();
         
         _isPaused = true;
+        
         StartAndPauseCommand = new DelegateCommand(Start);
         StartAndPauseButtonContent = "Continue";
+    }
+
+    private void Stop()
+    {
+        _cancellationTokenSource.Cancel();
+            
+        StartAndPauseButtonContent = "Start";
+        StartAndPauseCommand = new DelegateCommand(Start);
         
+        IsEnterLocked = false;
+        StartDirectoryMembers = new ObservableCollection<INode>();
+        FindAndAll = new FindAndAll();
+        CurrentSearchDirectory = string.Empty;
+            
+        _stopwatch.Reset();
+        TimeElapsed = _stopwatch.Elapsed;
+        _isPaused = false;
+        
+        _enumerator?.Dispose();
+        _enumerator = null;
     }
 
     private async Task StartTimerAsync(CancellationToken cancellationToken = default)
@@ -222,7 +259,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         while (_enumerator.MoveNext())
         {
-            CurrentSearchDirectory = _enumerator.Current;
+            CurrentSearchDirectory = Path.GetDirectoryName(_enumerator.Current)!;
             FindAndAll = new FindAndAll(FindAndAll.Find, FindAndAll.All + 1);
 
             var pathFromStart = Path.GetRelativePath(StartDirectoryPath, _enumerator.Current);
@@ -283,7 +320,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (_settings == null)
             return;
 
-        StartDirectoryPath = _settings.Path;
+        StartDirectoryPath = _settings.Path ?? string.Empty;
         RegexString = _settings.Regex;
     }
 
